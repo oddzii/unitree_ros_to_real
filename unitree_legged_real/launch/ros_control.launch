@@ -1,0 +1,18 @@
+<launch>
+   
+    <node pkg="unitree_legged_real" type="twist_sub" name="node_twist_sub" output="screen"/>
+    <node pkg="unitree_legged_real" type="set_led" name="set_led_color" output="screen"/>
+    
+    <node pkg="unitree_legged_real" type="odom.py" name="odom" output="screen"/>
+    <node pkg="unitree_legged_real" type="odom_movement_detector.py" name="odom_movement_detector" output="screen"/>
+
+    
+    <!-- launch joy -->
+    <include file="$(find teleop_twist_joy)/launch/teleop.launch"/>
+    
+    <include file="$(find go1_description)/launch/go1_rviz.launch"/>
+    
+    
+    <node pkg="rviz" type="rviz" name="rviz" respawn="false" output="screen" args="-d $(find unitree_legged_real)/rviz/display.rviz"/>
+
+</launch>
