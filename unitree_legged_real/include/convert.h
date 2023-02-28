@@ -301,9 +301,13 @@ unitree_legged_msgs::HighState state2rosMsg(UNITREE_LEGGED_SDK::HighState &state
     return ros_msg;
 }
 
-UNITREE_LEGGED_SDK::HighCmd rosMsg2Cmd(const geometry_msgs::Twist::ConstPtr &msg)
+UNITREE_LEGGED_SDK::HighCmd rosMsg2Cmd(const geometry_msgs::Twist::ConstPtr &msg, int gaittype, int mode)
 {
     UNITREE_LEGGED_SDK::HighCmd cmd;
+    double x;
+    double y;
+    double yy;
+    double zz;
 
     cmd.head[0] = 0xFE;
     cmd.head[1] = 0xEF;
@@ -320,13 +324,80 @@ UNITREE_LEGGED_SDK::HighCmd rosMsg2Cmd(const geometry_msgs::Twist::ConstPtr &msg
     cmd.velocity[1] = 0.0f;
     cmd.yawSpeed = 0.0f;
     cmd.reserve = 0;
+    cmd.velocity[0] = 0;
+    cmd.velocity[1] = 0;
+    cmd.yawSpeed = 0;
 
-    cmd.velocity[0] = msg->linear.x;
-    cmd.velocity[1] = msg->linear.y;
-    cmd.yawSpeed = msg->angular.z;
 
-    cmd.mode = 2;
-    cmd.gaitType = 1;
+    if (mode == 2)
+    {
+        cmd.mode = 2;
+        cmd.velocity[0] = msg->linear.x;
+        cmd.velocity[1] = msg->linear.y;
+        cmd.yawSpeed = msg->angular.z;
+    }
+    else if (mode == 1)
+    {
+        cmd.mode = 1;
+
+        if (msg->linear.x > 0.1)
+        {
+            x = 0.1;
+        } 
+        else if (msg->linear.x < -0.2)
+        {
+            x = -0.2;
+        }
+        else
+        {
+            x = msg->linear.x;
+        }
+
+        if (msg->linear.y > 1)
+        {
+            y = 1;
+        } 
+        else if (msg->linear.y < -1)
+        {
+            y= -1;
+        }
+        else
+        {
+            y= msg->linear.y;
+        }
+        
+        if (msg->angular.y> 0.3)
+        {
+            yy = 0.3;
+        } 
+        else if (msg->angular.y < -0.3)
+        {
+            yy = -0.3;
+        }
+        else
+        {
+            yy= msg->angular.y;
+        }
+
+        if (msg->angular.z > 0.4)
+        {
+            zz = 0.4;
+        } 
+        else if (msg->angular.z < -0.4)
+        {
+            zz = -0.4;
+        }
+        else
+        {
+            zz= msg->angular.z;
+        }
+
+        cmd.bodyHeight = x;
+        cmd.euler[0] = y;
+        cmd.euler[1] = yy;
+        cmd.euler[2] = zz;
+    }
+    cmd.gaitType = gaittype;
 
     return cmd;
 }
