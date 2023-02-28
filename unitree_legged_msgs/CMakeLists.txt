@@ -22,6 +22,11 @@ add_message_files(
   HighCmd.msg
   HighState.msg
 )
+add_service_files(
+  FILES
+  SetLedColor.srv
+  SetMode.srv
+)
 
 generate_messages(
   DEPENDENCIES
